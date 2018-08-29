@@ -10,7 +10,6 @@ import {
   AsyncStorage,
   Alert,
 } from 'react-native';
-
 import Note from './Note';
 
 const window = Dimensions.get('window');
@@ -20,32 +19,45 @@ class Home extends Component {
     super(props);
     this.state = {
         noteArray: [],
-        noteText: '',
+        noteText: "",
     };
   }
-  componentDidMount() {
-    AsyncStorage.getItem('anahtar').then((value) => this.setState({ 'anahtar': value }));
+  /*JSON.parse ve JSON.stringify ile devam ediyorum.Sanırım uygulama açıldığında çekip yerleştirmem gerekiyor.
+   Bunu düşünüp devam et. */
+  ComponentWillMount() {
+    console.log('giris');
+    getKey();
+    //AsyncStorage.getItem("key").then((value) => this.setState({ "key": value }));
+
   }
 
 async getKey() {
+  //Alert.alert("buraya geldik");
   if (this.state.noteText) {
     this.state.noteArray.push({
         note: this.state.noteText
     });
   try {
-    const value = await AsyncStorage.getItem(value);
+    const value = await AsyncStorage.getItem("key").then((val) => {
+    return JSON.parse(val);
+  });
     this.setState({ noteText: value });
+    console.log("json.parsing");
     } catch (error) {
     console.log('Error retrieving data' + error);
   }
 }
 }
-async saveKey(anahtar, value) {
+async saveKey() {
+  console.log("saving starting");
+  this.getKey();
   try {
-    await AsyncStorage.setItem( anahtar, JSON.stringify(value) );
-    this.setState({ noteText: value });
+    await AsyncStorage.setItem("key", JSON.stringify(this.state.noteText));
+    //this.setState({ noteText: "key" });
+    console.log('kayıt');
   } catch (error) {
     console.log("Error saving data" + error);
+    //Alert.alert("error");
   }
 }
 
@@ -63,24 +75,22 @@ async saveKey(anahtar, value) {
       />
             );
      });
-
     return (
       <ScrollView style={{ flex: 1, backgroundColor: 'white', }} >
         <View>
-          <View style={styles.headerstyle}>
-            <Text style={styles.headertextstyle}> REMİNDER </Text>
-          </View>
+        <View style={styles.headerstyle}>
+          <Text style={styles.headertextstyle}> REMİNDER </Text>
+        </View>
           <View style={{ flexDirection: 'row', padding: 8, justifyContent: 'space-between' }}>
             <TextInput
                 style={styles.textInput}
                 placeholder='Create Reminder'
-                onChangeText={(value) => this.saveKey(value)}
+                onChangeText={(value) => this.setState({ noteText: value })}
                 //value={(this.state.noteText)}
                 placeholderTextColor='white'
                 underlineColorAndroid='transparent'
-
             />
-            <TouchableOpacity onPress={this.getKey.bind(this)} >
+            <TouchableOpacity onPress={() => {this.saveKey();}} >
               <View style={styles.viewStyle}>
                 <Text style={styles.textstyle}> Save </Text>
               </View>
@@ -97,17 +107,17 @@ async saveKey(anahtar, value) {
 
 const styles = StyleSheet.create({
   headerstyle: {
-    width: window.width,
-    height: 50,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-  },
-  headertextstyle: {
-    color: '#1A1B1A',
-    fontSize: 21,
-  },
+  width: window.width,
+  height: 50,
+  backgroundColor: '#f0f0f0',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexDirection: 'column',
+},
+headertextstyle: {
+  color: '#1A1B1A',
+  fontSize: 21,
+},
   viewStyle: {
     height: 50,
     width: 50,
