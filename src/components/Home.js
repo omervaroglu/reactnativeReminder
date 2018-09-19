@@ -27,37 +27,43 @@ class Home extends Component {
     this.getKey();
   }
 
+  pushing() {
+    if (this.state.noteText) {
+      this.state.noteArray.push({
+          note: this.state.noteText
+      });
+      this.saveKey();
+  }
+}
+
 async getKey() {
-  console.log('getkey');
-    console.log(this.state.noteArray + "---");
   try {
     console.log('getıtem');
     const value = await AsyncStorage.getItem("key");
     this.setState({ noteArray: JSON.parse(value) });
-    console.log(JSON.parse(value));
+    console.log(JSON.parse(value));//arrayin içindeki veriler parse edilmiş gözle görülebilecek gibi
     } catch (error) {
     console.log('Error retrieving data' + error);
   }
+    console.log(this.state.noteArray + "---");//parse edilmemiş ham veri
 }
+
+
 async saveKey() {
-  if (this.state.noteText) {
-    this.state.noteArray.push({
-        note: this.state.noteText
-    });
-  console.log("saving starting");
-  console.log(this.state.noteText);
   try {
     await AsyncStorage.setItem("key", JSON.stringify(this.state.noteArray));
-    console.log('kayıt');
   } catch (error) {
     console.log("Error saving data" + error);
   }
     this.getKey();
 }
-}
+
   deleteNote(key) {
-   this.state.noteArray.splice(key, 1);
-   this.setState({ noteArray: this.state.noteArray });
+    this.state.noteArray.splice(key, 1);
+    this.setState({ noteArray: this.state.noteArray });
+
+    this.saveKey();
+
 }
 
   render() {
@@ -83,7 +89,7 @@ async saveKey() {
                 placeholderTextColor='white'
                 underlineColorAndroid='transparent'
             />
-            <TouchableOpacity onPress={() => {this.saveKey();}} >
+            <TouchableOpacity onPress={() => {this.pushing();}} >
               <View style={styles.viewStyle}>
                 <Text style={styles.textstyle}> Save </Text>
               </View>
