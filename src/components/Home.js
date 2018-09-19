@@ -8,7 +8,7 @@ import {
   TextInput,
   Dimensions,
   AsyncStorage,
-  Alert,
+  Alert
 } from 'react-native';
 import Note from './Note';
 
@@ -22,45 +22,39 @@ class Home extends Component {
         noteText: "",
     };
   }
-  /*JSON.parse ve JSON.stringify ile devam ediyorum.Sanırım uygulama açıldığında çekip yerleştirmem gerekiyor.
-   Bunu düşünüp devam et. */
-  ComponentWillMount() {
+  componentWillMount() {
     console.log('giris');
-    getKey();
-    //AsyncStorage.getItem("key").then((value) => this.setState({ "key": value }));
-
+    this.getKey();
   }
 
 async getKey() {
-  //Alert.alert("buraya geldik");
-  if (this.state.noteText) {
-    this.state.noteArray.push({
-        note: this.state.noteText
-    });
+  console.log('getkey');
+    console.log(this.state.noteArray + "---");
   try {
-    const value = await AsyncStorage.getItem("key").then((val) => {
-    return JSON.parse(val);
-  });
-    this.setState({ noteText: value });
-    console.log("json.parsing");
+    console.log('getıtem');
+    const value = await AsyncStorage.getItem("key");
+    this.state.noteArray = JSON.parse(value);
+    console.log(JSON.parse(value));
     } catch (error) {
     console.log('Error retrieving data' + error);
   }
 }
-}
 async saveKey() {
+  if (this.state.noteText) {
+    this.state.noteArray.push({
+        note: this.state.noteText
+    });
   console.log("saving starting");
-  this.getKey();
+  console.log(this.state.noteText);
   try {
-    await AsyncStorage.setItem("key", JSON.stringify(this.state.noteText));
-    //this.setState({ noteText: "key" });
+    await AsyncStorage.setItem("key", JSON.stringify(this.state.noteArray));
     console.log('kayıt');
   } catch (error) {
     console.log("Error saving data" + error);
-    //Alert.alert("error");
   }
+    this.getKey();
 }
-
+}
   deleteNote(key) {
    this.state.noteArray.splice(key, 1);
    this.setState({ noteArray: this.state.noteArray });
