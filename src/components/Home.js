@@ -33,7 +33,7 @@ async getKey() {
   try {
     console.log('getıtem');
     const value = await AsyncStorage.getItem("key");
-    this.state.noteArray = JSON.parse(value);
+    this.setState({ noteArray: JSON.parse(value) });
     console.log(JSON.parse(value));
     } catch (error) {
     console.log('Error retrieving data' + error);
@@ -80,7 +80,6 @@ async saveKey() {
                 style={styles.textInput}
                 placeholder='Create Reminder'
                 onChangeText={(value) => this.setState({ noteText: value })}
-                //value={(this.state.noteText)}
                 placeholderTextColor='white'
                 underlineColorAndroid='transparent'
             />
