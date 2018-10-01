@@ -8,9 +8,14 @@ import {
   TextInput,
   Dimensions,
   AsyncStorage,
-  Alert
+  Alert,
+  AppState,
 } from 'react-native';
+import PushNotification from 'react-native-push-notification';
 import Note from './Note';
+import PushController from './NotificationController';
+
+
 
 const window = Dimensions.get('window');
 
@@ -21,11 +26,22 @@ class Home extends Component {
         noteArray: [],
         noteText: "",
     };
+    this.handleAppStateChange = this.handleAppStateChange.bind(this);
+    this.sendNotification = this.sendNotification.bind(this);
   }
   componentWillMount() {
     console.log('giris');
     this.getKey();
   }
+
+  componentDidMount() {
+    AppState.addEventListener('change', this.handleAppStateChange);
+  };
+
+  componentWillUnmount() {
+  AppState.removeEventListener('change', this.handleAppStateChange);
+};
+
 
   pushing() {
     if (this.state.noteText) {
@@ -66,6 +82,23 @@ async saveKey() {
 
 }
 
+
+  handleAppStateChange(appState) {
+    if (appState === 'background') {
+      // Schedule a notification
+      PushNotification.localNotificationSchedule({
+        message: 'Scheduled delay notification message', // (required)
+        date: new Date(Date.now() + (3 * 1000)) // in 3 secs
+      });
+    }
+  };
+
+  sendNotification() {
+    PushNotification.localNotification({
+      message: 'You pushed the notification button!'
+    });
+  };
+
   render() {
     const notes = this.state.noteArray.map((val, key) => {
       return (
@@ -95,6 +128,12 @@ async saveKey() {
               </View>
             </TouchableOpacity>
           </View>
+          <TouchableOpacity onPress={() => {this.pushing();}} >
+            <View style={styles.viewStyle}>
+              <Text style={styles.textstyle}> push noti </Text>
+            </View>
+          </TouchableOpacity>
+          <PushController />
           <ScrollView >
             {notes}
           </ScrollView>
